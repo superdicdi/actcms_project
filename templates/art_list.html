@@ -1,75 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>文章管理系统</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
-    {% block css %}{% endblock %}
-    <script src="{{ url_for('static',filename='js/jquery.slim.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='js/popper.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
-    <script src="https://cdn.bootcss.com/holder/2.9.4/holder.js"></script>
-    {% block js %}{% endblock %}
-</head>
-<body>
-    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-        <div class="container">
-            <a class="navbar-brand">文章管理系统</a>
-            <a class="btn btn-outline-danger" href="/login/">账号名称 -> 退出</a>
-        </div>
-    </nav>
-    <div class="container" style="margin-top: 6px;">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="list-group">
-                    <a href="/art/add" class="list-group-item list-group-item-action">发布文章</a>
-                    <a href="/art/list" class="list-group-item list-group-item-action active">文章列表</a>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header">文章列表</div>
-                    <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>标题</th>
-                                    <th>分类</th>
-                                    <th>封面</th>
-                                    <th>作者</th>
-                                    <th>发布时间</th>
-                                    <th>管理操作</th>
-                                </tr>
-                            </thead>
-                            {% for i in range(1, 11) %}
-                                <tr>
-                                    <td>火星发现淡水</td>
-                                    <td>科技</td>
-                                    <td><img data-src="holder.js/75"></td>
-                                    <td>imooc</td>
-                                    <td>2018-01-01 12:00:00</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-warning">编辑</button>
-                                        <button class="btn btn-sm btn-outline-danger">删除</button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                        <nav>
-                            <ul class="pagination">
-                                <li class="page-item"><a class="page-link" href="#">上一页</a></li>
-                                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "layout.html" %}
+{% block css %}
+    <style>
+    .table td, .table th {
+        vertical-align: middle;
+    }
+    </style>
+{% endblock %}
+{% block js %}
 
-    </div>
-</body>
-</html>
+{% endblock %}
+{% block content %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>标题</th>
+                    <th>分类</th>
+                    <th>封面</th>
+                    <th>作者</th>
+                    <th>发布时间</th>
+                    <th>管理操作</th>
+                </tr>
+            </thead>
+            {% for i in range(1, 11) %}
+                <tr>
+                    <td>火星发现淡水</td>
+                    <td>科技</td>
+                    <td><img data-src="holder.js/75×40"></td>
+                    <td>imooc</td>
+                    <td>2018-01-01 12:00:00</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-warning">编辑</button>
+                        <button class="btn btn-sm btn-outline-danger">删除</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">上一页</a></li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+            </ul>
+        </nav>
+
+{% endblock %}
+
