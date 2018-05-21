@@ -1,13 +1,10 @@
 {% extends "layout.html" %}
-{% block css %}
-    <style>
-    .table td, .table th {
-        vertical-align: middle;
-    }
-    </style>
-{% endblock %}
 {% block js %}
-
+    <script>
+        $(document).ready(function () {
+           $("#m2").addClass("active");
+        });
+    </script>
 {% endblock %}
 {% block content %}
         <table class="table table-bordered">
