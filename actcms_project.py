@@ -1,18 +1,35 @@
-from flask import Flask, render_template, redirect, url_for
-
-app = Flask(__name__)
+from datetime import datetime
+from flask import render_template, redirect, flash
+from forms import LoginForm, RegisterForm, PublishArtForm
+from models import app, User, db
+from werkzeug.security import generate_password_hash
 
 
 # 登录
 @app.route('/login/', methods=["GET", "POST"])
 def login():
-    return render_template("login.html", title="登录")  # 渲染模板
+    form = LoginForm()
+    return render_template("login.html", title="登录", form=form)  # 渲染模板
 
 
 # 注册
 @app.route('/register/', methods=["GET", "POST"])
 def register():
-    return render_template("register.html", title="注册")  # 渲染模板
+    form = RegisterForm()
+    if form.validate_on_submit():
+        data = form.data
+        user = User(
+            name=data["name"],
+            pwd=generate_password_hash(data["password"]),
+            addtime=datetime.now()
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash("注册成功!", "ok")
+        return redirect("/login/")
+    else:
+        flash("输入注册信息", "err")
+    return render_template("register.html", title="注册", form=form)  # 渲染模板
 
 
 # 登出
@@ -24,7 +41,8 @@ def logout():
 # 发布文章
 @app.route('/art/add/', methods=["GET", "POST"])
 def art_add():
-    return render_template("art_add.html", title="发布文章")  # 渲染模板
+    form = PublishArtForm()
+    return render_template("art_add.html", title="发布文章", form=form)  # 渲染模板
 
 
 # 编辑文章
@@ -46,4 +64,4 @@ def art_list():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1", port=8080)
+    app.run(debug=True, host="127.0.0.1", port=5001)

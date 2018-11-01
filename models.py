@@ -1,13 +1,14 @@
-__author__ = "TuDi"
-__date__ = "2018/5/12 上午12:11"
-import pymysql
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 
+__author__ = "TuDi"
+__date__ = "2018/5/12 上午12:11"
+
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123456@127.0.0.1:3306/artcms_pro"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123456@127.0.0.1:3306/actcms_pro?charset=utf8"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["SECRET_KEY"] = "12345678"
 db = SQLAlchemy(app)
 
 """
@@ -43,6 +44,8 @@ class User(db.Model):
 6.内容
 7.发布时间
 """
+
+
 class Art(db.Model):
     __tablename__ = "art"
     id = db.Column(db.Integer, primary_key=True)  # 编号
@@ -57,5 +60,5 @@ class Art(db.Model):
         return "<Art %r>" % self.title
 
 
-if __name__ == "__main__":
-    db.create_all()
+# if __name__ == "__main__":
+#     db.create_all()
