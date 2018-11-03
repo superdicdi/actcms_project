@@ -1,5 +1,6 @@
+import os
 from datetime import datetime
-from flask import render_template, redirect, flash
+from flask import render_template, redirect, flash, session, Response
 from forms import LoginForm, RegisterForm, PublishArtForm
 from models import app, User, db
 from werkzeug.security import generate_password_hash
@@ -61,6 +62,23 @@ def art_del(id):
 @app.route('/art/list/', methods=["GET"])
 def art_list():
     return render_template("art_list.html", title="文章列表")  # 渲染模板
+
+
+# 验证码
+@app.route('/codes/', methods=["GET"])
+def codes():
+    from codes import Code
+    c = Code()
+    info = c.create_code()
+    # image = "static/code/{0}".format(info["img_name"]) # 用相对路径寸就用相对路径取
+    image = os.path.join(os.path.dirname(__file__), "static/code") + "/" + info["img_name"]
+    with open(image, "rb") as f:
+        img = f.read()
+
+    session["code"] = info["code"]
+    print(session)
+    print(session["code"])
+    return Response(img, mimetype="jpeg")
 
 
 if __name__ == '__main__':

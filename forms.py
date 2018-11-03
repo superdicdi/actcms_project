@@ -1,3 +1,4 @@
+from flask import session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
@@ -106,6 +107,14 @@ class RegisterForm(FlaskForm):
         user = User.query.filter_by(name=name).count()
         if user > 0:
             raise ValidationError("账号已存在！")
+
+    # 自定义验证规则，validate_字段名
+    def validate_code(self, field):
+        code = field.data
+        if "code" not in session:
+            raise ValidationError("验证码出错，请刷新页面")
+        if code.lower() != session["code"].lower():
+            raise ValidationError("验证码不正确")
 
 
 class PublishArtForm(FlaskForm):

@@ -32,7 +32,8 @@
             <label>验证码</label>
 {#            <input type="password" class="form-control" placeholder="请输入验证码">#}
             {{ form.code }}
-            <img data-src="holder.js/180×50" style="margin-top: 6px;">
+{#            <img data-src="holder.js/180×50" style="margin-top: 6px;">#}
+            <img title="点击切换" onclick="this.src='/codes/?' + Math.random()" src="/codes/" style="width: 180px; height: 40px; margin-top: 6px">
             {% for error in form.code.errors %}
                 <p style="color: red">{{ error }}</p>
             {% endfor %}

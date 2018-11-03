@@ -37,8 +37,8 @@ class Code:
         image = Image.new("RGB", (width, height), (192, 192, 192))
         # image.show()
         font_name = random.randint(1, 3)
-        # font_file = os.path.join(os.path.dirname(__file__), "static/fonts") + "/{0}.ttf".format(font_name)
-        font_file = "static/fonts/{0}.ttf".format(font_name)
+        font_file = os.path.join(os.path.dirname(__file__), "static/fonts") + "/{0}.ttf".format(font_name)
+        # font_file = "static/fonts/{0}.ttf".format(font_name)
         font = ImageFont.truetype(font_file, 30)
 
         # 创建b图片背景上的像素点
@@ -59,7 +59,9 @@ class Code:
         image.filter(ImageFilter.BLUR)
         # 将图片保存至本地
         image_name = "{0}.jpg".format(uuid.uuid4().hex)
-        save_dir = "static/code"
+        # save_dir = "static/code"  # 用相对路径文件夹无法显示，目前不知道原因
+        save_dir = os.path.join(os.path.dirname(__file__), "static/code")
+        print(os.path.exists(save_dir))
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         image.save(save_dir + "/" + image_name, "jpeg")
