@@ -10,6 +10,10 @@ from werkzeug.security import generate_password_hash
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        data = form.data
+        session["user"] = data["name"]
+        return redirect("/art/list/")  # 渲染模板
     return render_template("login.html", title="登录", form=form)  # 渲染模板
 
 
@@ -76,8 +80,6 @@ def codes():
         img = f.read()
 
     session["code"] = info["code"]
-    print(session)
-    print(session["code"])
     return Response(img, mimetype="jpeg")
 
 

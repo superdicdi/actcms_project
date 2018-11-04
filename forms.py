@@ -1,5 +1,6 @@
 from flask import session
 from flask_wtf import FlaskForm
+from werkzeug.security import check_password_hash
 from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 from models import User
@@ -41,7 +42,19 @@ class LoginForm(FlaskForm):
 
         }
     )
+    def validate_name(self, field):
 
+        name = field.data
+        user = User.query.filter_by(name=name).count()
+        if not user > 0:
+            raise ValidationError("当前用户未注册")
+
+    def validate_password(self, field):
+        pwd = field.data
+        user = User.query.filter_by(name=self.name.data).first()
+        if user:
+            if not user.check_pwd(pwd):
+                raise ValidationError("密码不正确")
 
 class RegisterForm(FlaskForm):
     """
