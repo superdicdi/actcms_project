@@ -1,9 +1,20 @@
 import os
 from datetime import datetime
-from flask import render_template, redirect, flash, session, Response
+from functools import wraps
+
+from flask import render_template, redirect, flash, session, Response, url_for, request
 from forms import LoginForm, RegisterForm, PublishArtForm
 from models import app, User, db
 from werkzeug.security import generate_password_hash
+
+
+def user_login(f):
+    @wraps(f)
+    def login_req(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login", next=request.url))
+        return f(*args, **kwargs)
+    return login_req
 
 
 # 登录
@@ -39,12 +50,15 @@ def register():
 
 # 登出
 @app.route('/logout/', methods=["GET"])
+@user_login
 def logout():
+    session.pop("user", None)
     return redirect("/login/")  # 重定向到登录页面
 
 
 # 发布文章
 @app.route('/art/add/', methods=["GET", "POST"])
+@user_login
 def art_add():
     form = PublishArtForm()
     return render_template("art_add.html", title="发布文章", form=form)  # 渲染模板
@@ -52,18 +66,21 @@ def art_add():
 
 # 编辑文章
 @app.route('/art/edit/<int:id>/', methods=["GET", "POST"])
+@user_login
 def art_edit(id):
     return render_template("art_edit.html")  # 渲染模板
 
 
 # 删除文章
 @app.route('/art/del/<int:id>/', methods=["GET"])
+@user_login
 def art_del(id):
     return redirect("/art/list/")  # 渲染模板
 
 
 # 文章列表
 @app.route('/art/list/', methods=["GET"])
+@user_login
 def art_list():
     return render_template("art_list.html", title="文章列表")  # 渲染模板
 
