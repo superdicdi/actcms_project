@@ -1,12 +1,14 @@
 import os
+import uuid
 from datetime import datetime
 from functools import wraps
 
 from flask import render_template, redirect, flash, session, Response, url_for, request
 from forms import LoginForm, RegisterForm, PublishArtForm
-from models import app, User, db
+from models import app, User, db, Art
 from werkzeug.security import generate_password_hash
-
+from werkzeug.utils import secure_filename
+app.config["UP"] = os.path.join(os.path.dirname(__file__), "static/uploads")
 
 def user_login(f):
     @wraps(f)
@@ -24,7 +26,7 @@ def login():
     if form.validate_on_submit():
         data = form.data
         session["user"] = data["name"]
-        return redirect("/art/list/")  # 渲染模板
+        return redirect("/art/list/1/")  # 渲染模板
     return render_template("login.html", title="登录", form=form)  # 渲染模板
 
 
@@ -56,11 +58,45 @@ def logout():
     return redirect("/login/")  # 重定向到登录页面
 
 
+# 修改文件名称
+def change_name(name):
+    info = os.path.splitext(name)
+    print(info)
+    # 文件名：时间格式字符串+唯一字符串+后缀名
+    name = datetime.now().strftime('%Y%m%d%H%M%S') + str(uuid.uuid4().hex) + info[-1]
+    return name
+
+
 # 发布文章
 @app.route('/art/add/', methods=["GET", "POST"])
 @user_login
 def art_add():
     form = PublishArtForm()
+    if form.validate_on_submit():
+        data = form.data
+        print(form.logo.data.filename)
+        file = secure_filename(form.logo.data.filename)
+        print("file == ", file)
+        logo = change_name(file)
+        print("logo == ", logo)
+        if not os.path.exists(app.config["UP"]):
+            os.makedirs(app.config["UP"])
+
+        form.logo.data.save(app.config["UP"] + "/" + logo)
+        user = User.query.filter_by(name=session["user"]).first()
+        user_id = user.id
+        # 保存数据
+        art = Art(
+            title=data["title"],
+            cate=data["category"],
+            user_id=user_id,
+            logo=logo,
+            content=data["content"],
+            addtime=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
+        db.session.add(art)
+        db.session.commit()
+
     return render_template("art_add.html", title="发布文章", form=form)  # 渲染模板
 
 
@@ -75,14 +111,17 @@ def art_edit(id):
 @app.route('/art/del/<int:id>/', methods=["GET"])
 @user_login
 def art_del(id):
-    return redirect("/art/list/")  # 渲染模板
+    return redirect("/art/list/1/")  # 渲染模板
 
 
 # 文章列表
-@app.route('/art/list/', methods=["GET"])
+@app.route('/art/list/<int:page>/', methods=["GET"])
 @user_login
-def art_list():
-    return render_template("art_list.html", title="文章列表")  # 渲染模板
+def art_list(page=1):
+    user = User.query.filter_by(name=session["user"]).first()
+    page_data = Art.query.filter_by(user_id=user.id).order_by(Art.addtime.desc()).paginate(page=page, per_page=1)
+    cate = [(1, "科技"), (2, "搞笑"), (3, "军事")]
+    return render_template("art_list.html", title="文章列表", page_data=page_data, cate=cate)  # 渲染模板
 
 
 # 验证码

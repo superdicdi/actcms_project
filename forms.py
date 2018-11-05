@@ -1,6 +1,5 @@
 from flask import session
 from flask_wtf import FlaskForm
-from werkzeug.security import check_password_hash
 from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 from models import User
@@ -55,6 +54,7 @@ class LoginForm(FlaskForm):
         if user:
             if not user.check_pwd(pwd):
                 raise ValidationError("密码不正确")
+
 
 class RegisterForm(FlaskForm):
     """
@@ -136,7 +136,9 @@ class PublishArtForm(FlaskForm):
     """
     title = StringField(
         label="标题",
-        validators=[],
+        validators=[
+            DataRequired("标题不能为空")
+        ],
         description="标题",
         render_kw={
             "class": "form-control",
@@ -146,7 +148,9 @@ class PublishArtForm(FlaskForm):
 
     category = SelectField(
         label="分类",
-        validators=[],
+        validators=[
+            DataRequired("分类不能为空")
+        ],
         description="分类",
         choices=[(1, "科技"), (2, "搞笑"), (3, "军事")],
         default=1,
@@ -158,7 +162,9 @@ class PublishArtForm(FlaskForm):
 
     logo = FileField(
         label="封面",
-        validators=[],
+        validators=[
+            DataRequired("封面不能为空")
+        ],
         description="封面",
         render_kw={
             "class": "form-control-file",
@@ -167,7 +173,9 @@ class PublishArtForm(FlaskForm):
 
     content = TextAreaField(
         label="内容",
-        validators=[],
+        validators=[
+            DataRequired("内容不能为空")
+        ],
         description="内容",
         render_kw={
             "id": "content",

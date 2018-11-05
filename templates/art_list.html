@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% import "page.html" as pg %}
 {% block css %}
     <style>
         .table td, .table th{
@@ -26,13 +26,14 @@
                     <th>管理操作</th>
                 </tr>
             </thead>
-            {% for i in range(1, 11) %}
+            {% for i in page_data.items %}
                 <tr>
-                    <td>火星发现淡水</td>
-                    <td>科技</td>
-                    <td><img data-src="holder.js/75×40"></td>
-                    <td>imooc</td>
-                    <td>2018-01-01 12:00:00</td>
+                    <td>{{ i.title }}</td>
+                    <td>{{ cate[i.cate - 1][1] }}</td>
+{#                    <td><img data-src="holder.js/75×40"></td>#}
+                    <td><img src="/static/uploads/{{ i.logo }}" style="width: 75px;height: 40px;"></td>
+                    <td>{{ session['user'] }}</td>
+                    <td>{{ i.addtime }}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-warning">编辑</button>
                         <button class="btn btn-sm btn-outline-danger">删除</button>
@@ -40,16 +41,7 @@
                 </tr>
             {% endfor %}
         </table>
-        <nav>
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">上一页</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">4</a></li>
-                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
-            </ul>
-        </nav>
+        {{ pg.page(page_data, "art_list") }}
 
 {% endblock %}
 
