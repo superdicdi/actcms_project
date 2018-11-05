@@ -35,8 +35,8 @@
                     <td>{{ session['user'] }}</td>
                     <td>{{ i.addtime }}</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-warning">编辑</button>
-                        <button class="btn btn-sm btn-outline-danger">删除</button>
+                        <a href="{{ url_for('art_edit', id=i.id) }}" class="btn btn-sm btn-outline-warning">编辑</a>
+                        <a href="{{ url_for('art_del', id=i.id) }}" class="btn btn-sm btn-outline-danger">删除</a>
                     </td>
                 </tr>
             {% endfor %}

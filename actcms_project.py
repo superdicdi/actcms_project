@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import wraps
 
 from flask import render_template, redirect, flash, session, Response, url_for, request
-from forms import LoginForm, RegisterForm, PublishArtForm
+from forms import LoginForm, RegisterForm, PublishArtForm, EditArtForm
 from models import app, User, db, Art
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
@@ -104,13 +104,37 @@ def art_add():
 @app.route('/art/edit/<int:id>/', methods=["GET", "POST"])
 @user_login
 def art_edit(id):
-    return render_template("art_edit.html")  # 渲染模板
+    art = Art.query.get_or_404(int(id))
+    form = EditArtForm()
+    if request.method == "GET":
+        form.content.data = art.content
+        form.category.data = art.cate
+        form.logo.data = art.logo
+    if form.validate_on_submit():
+        data = form.data
+        art.title = data["title"]
+        file = secure_filename(form.logo.data.filename)
+        logo = change_name(file)
+        if not os.path.exists(app.config["UP"]):
+            os.makedirs(app.config["UP"])
+
+        form.logo.data.save(app.config["UP"] + "/" + logo)
+        print("logo == ", logo)
+        art.logo = logo
+        art.cate = data["category"]
+        art.content = data["content"]
+        db.session.add(art)
+        db.session.commit()
+    return render_template("art_edit.html", form=form, title="编辑文章", art=art)  # 渲染模板
 
 
 # 删除文章
 @app.route('/art/del/<int:id>/', methods=["GET"])
 @user_login
 def art_del(id):
+    art = Art.query.get_or_404(int(id))
+    db.session.delete(art)
+    db.session.commit()
     return redirect("/art/list/1/")  # 渲染模板
 
 
