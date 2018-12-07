@@ -12,3 +12,5 @@ deploy_key_rsa
 .idea/
 *.idea/
 .DS_Store
+static/code/
+static/uploads/
