@@ -104,44 +104,26 @@ def art_add():
 @app.route('/art/edit/<int:id>/', methods=["GET", "POST"])
 @user_login
 def art_edit(id):
-    art = Art.query.get_or_404(int(id))
     form = EditArtForm()
+    form.logo.validators = []  # 取消非空约束，当用户未上传图片时不提示，默认用上一次上传的图片
+    art = Art.query.get_or_404(int(id))
 
     if request.method == "GET":  # get 进来赋默认值，此时 form.logo.data = logo名.jpg
         form.content.data = art.content
         form.category.data = art.cate
         form.logo.data = art.logo
 
-    print("1", form.logo)
-    print("1", form.logo.data)
-
-    if not form.logo.data:
-        """
-        1、当提交的时候是 form.logo.data 为空，代表用户没上传图片，此时为了保证 form
-        表单不提示数据为空，因此给 form.logo.data 赋上上一次的 logo名.jpd
-        2、当提交的时候是 form.logo.data 不为空，代表用户上传了图片
-        """
-        form.logo.data = art.logo
-    print("2", form.logo)
-    print("2", form.logo.data)
     if form.validate_on_submit():
 
         data = form.data
         art.title = data["title"]
+        if not os.path.exists(app.config["UP"]):
+            os.makedirs(app.config["UP"])
 
-        try:
-
-            print("3", form.logo.data.filename)
+        if hasattr(form.logo.data, "filename"):
             file = secure_filename(form.logo.data.filename)
-            logo = change_name(file)
-            if not os.path.exists(app.config["UP"]):
-                os.makedirs(app.config["UP"])
-
-            form.logo.data.save(app.config["UP"] + "/" + logo)
-            print("logo == ", logo)
-            art.logo = logo
-        except AttributeError as e:
-            print("4", form.logo.data)
+            art.logo = change_name(file)
+            form.logo.data.save(app.config["UP"] + "/" + art.logo)
 
         art.cate = data["category"]
         art.content = data["content"]
