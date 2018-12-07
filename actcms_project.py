@@ -106,21 +106,43 @@ def art_add():
 def art_edit(id):
     art = Art.query.get_or_404(int(id))
     form = EditArtForm()
-    if request.method == "GET":
+
+    if request.method == "GET":  # get 进来赋默认值，此时 form.logo.data = logo名.jpg
         form.content.data = art.content
         form.category.data = art.cate
         form.logo.data = art.logo
+
+    print("1", form.logo)
+    print("1", form.logo.data)
+
+    if not form.logo.data:
+        """
+        1、当提交的时候是 form.logo.data 为空，代表用户没上传图片，此时为了保证 form
+        表单不提示数据为空，因此给 form.logo.data 赋上上一次的 logo名.jpd
+        2、当提交的时候是 form.logo.data 不为空，代表用户上传了图片
+        """
+        form.logo.data = art.logo
+    print("2", form.logo)
+    print("2", form.logo.data)
     if form.validate_on_submit():
+
         data = form.data
         art.title = data["title"]
-        file = secure_filename(form.logo.data.filename)
-        logo = change_name(file)
-        if not os.path.exists(app.config["UP"]):
-            os.makedirs(app.config["UP"])
 
-        form.logo.data.save(app.config["UP"] + "/" + logo)
-        print("logo == ", logo)
-        art.logo = logo
+        try:
+
+            print("3", form.logo.data.filename)
+            file = secure_filename(form.logo.data.filename)
+            logo = change_name(file)
+            if not os.path.exists(app.config["UP"]):
+                os.makedirs(app.config["UP"])
+
+            form.logo.data.save(app.config["UP"] + "/" + logo)
+            print("logo == ", logo)
+            art.logo = logo
+        except AttributeError as e:
+            print("4", form.logo.data)
+
         art.cate = data["category"]
         art.content = data["content"]
         db.session.add(art)
@@ -143,7 +165,7 @@ def art_del(id):
 @user_login
 def art_list(page=1):
     user = User.query.filter_by(name=session["user"]).first()
-    page_data = Art.query.filter_by(user_id=user.id).order_by(Art.addtime.desc()).paginate(page=page, per_page=1)
+    page_data = Art.query.filter_by(user_id=user.id).order_by(Art.addtime.desc()).paginate(page=page, per_page=3)
     cate = [(1, "科技"), (2, "搞笑"), (3, "军事")]
     return render_template("art_list.html", title="文章列表", page_data=page_data, cate=cate)  # 渲染模板
 

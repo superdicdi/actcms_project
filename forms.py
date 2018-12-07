@@ -20,7 +20,8 @@ class LoginForm(FlaskForm):
         description="账号",
         render_kw={
             "class": "form-control",
-            "placeholder": "请输入账号"
+            "placeholder": "请输入账号",
+            "required": False,
         }
     )
     password = PasswordField(
@@ -31,7 +32,8 @@ class LoginForm(FlaskForm):
         description="密码",
         render_kw={
             "class": "form-control",
-            "placeholder": "请输入密码"
+            "placeholder": "请输入密码",
+            "required": False,
         }
     )
     submit = SubmitField(
@@ -209,7 +211,8 @@ class EditArtForm(FlaskForm):
         description="标题",
         render_kw={
             "class": "form-control",
-            "placeholder": "请输入标题"
+            "placeholder": "请输入标题",
+            "required": False
         }
     )
 
@@ -224,6 +227,7 @@ class EditArtForm(FlaskForm):
         coerce=int,
         render_kw={
             "class": "form-group",
+            "required": False
         }
     )
 
@@ -235,6 +239,7 @@ class EditArtForm(FlaskForm):
         description="封面",
         render_kw={
             "class": "form-control-file",
+            "required": False
         }
     )
 
